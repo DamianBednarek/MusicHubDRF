@@ -1,10 +1,28 @@
 from uuid import uuid4
 
+
+from django.contrib.auth import get_user_model
+
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 
 from ..main.utils import get_upload_path, get_sentinal_user
 from ..config.settings import Common
+
+
+
+def get_upload_path(instance, filename):
+    return os.path.join(
+        "tracks",
+        instance.created_by.get_email_short(),
+        filename,
+    )
+
+
+def get_sentinal_user():
+    deleted_user = get_user_model().objects.get_or_create(email="deleted_user")
+    return deleted_user[0]  # id is on index 0 by default
+
 
 
 class Track(models.Model):
@@ -30,6 +48,7 @@ class Track(models.Model):
     created_by = models.ForeignKey(
         Common.AUTH_USER_MODEL, on_delete=models.SET(get_sentinal_user)
     )
+
     playlist = models.ForeignKey(
         "playlists.Playlist",
         on_delete=models.CASCADE,
