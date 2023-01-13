@@ -22,7 +22,6 @@ def get_sentinal_user():
 
 
 class Track(models.Model):
-
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
 
     filename = models.CharField(
@@ -43,6 +42,14 @@ class Track(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
         Common.AUTH_USER_MODEL, on_delete=models.SET(get_sentinal_user)
+    )
+
+    playlist = models.ForeignKey(
+        "playlists.Playlist",
+        on_delete=models.CASCADE,
+        to_field="name",
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
