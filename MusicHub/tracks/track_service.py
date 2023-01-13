@@ -1,8 +1,8 @@
-from mutagen import mp3, wave, aac
-from ..antivirusProvider.service import AntivirusScan
-from ..antivirusProvider.service import AntivirusScan
-from rest_framework.serializers import ValidationError
-from .constants import MAX_FILE_SIZE_IN_MB
+from mutagen import aac, mp3, wave
+from pydantic import ValidationError
+
+from MusicHub.antivirusProvider.service import AntivirusScan
+from MusicHub.main.constants import MAX_FILE_SIZE_IN_MB
 
 
 def get_track_length(file):
