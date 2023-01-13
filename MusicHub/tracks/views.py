@@ -1,29 +1,26 @@
 from django.utils.decorators import method_decorator
+from drf_yasg.utils import no_body
 from drf_yasg.utils import swagger_auto_schema
-from requests import request
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from MusicHub.main.swagger_parameters import basic_response
 from MusicHub.main.utils import LargeResultsSetPagination
 from MusicHub.tracks import custom_track_schema
 from MusicHub.tracks.models import Track
 from MusicHub.tracks.serializers import (
     AddTrackToPlaylistSerializer,
-    CreateTrackSerializer,
-    ListTrackSerializer,
 )
-
+from MusicHub.tracks.serializers import CreateTrackSerializer, ListTrackSerializer
 from .custom_track_schema import TOKEN_PARAMETER
-from drf_yasg.utils import no_body
 
 
 @method_decorator(
     name="post",
     decorator=swagger_auto_schema(
-        auto_schema=custom_track_schema.CustomSwaggerAutoSchema,
         manual_parameters=[
             TOKEN_PARAMETER,
             custom_track_schema.track_file,
@@ -50,10 +47,8 @@ class UploadTrackView(CreateAPIView):
 @method_decorator(
     name="get",
     decorator=swagger_auto_schema(
-        manual_parameters=[custom_track_schema.TOKEN_PARAMETER],
-        responses=custom_track_schema.basic_response(
-            "200", custom_track_schema.list_example
-        ),
+        manual_parameters=[TOKEN_PARAMETER],
+        responses=basic_response("200", custom_track_schema.list_example, "400"),
     ),
 )
 class ListTracksView(generics.ListAPIView):
@@ -73,10 +68,8 @@ class ListTracksView(generics.ListAPIView):
 @method_decorator(
     name="delete",
     decorator=swagger_auto_schema(
-        manual_parameters=[custom_track_schema.TOKEN_PARAMETER],
-        responses=custom_track_schema.basic_response(
-            "200", "Track deleted successfully"
-        ),
+        manual_parameters=[TOKEN_PARAMETER],
+        responses=basic_response("200", "Track deleted successfully", "400"),
     ),
 )
 class DeleteOneTrackView(generics.DestroyAPIView):
@@ -87,10 +80,7 @@ class DeleteOneTrackView(generics.DestroyAPIView):
 
     permission_classes = [IsAuthenticated]
     serializer_class = ListTrackSerializer
-
-    def get_queryset(self):
-        track = Track.objects.all()
-        return track
+    queryset = Track.objects.all()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

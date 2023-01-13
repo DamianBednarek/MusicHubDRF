@@ -1,12 +1,9 @@
 from django.urls import path
 
 from .views import (
-    ListTracksView,
-    UploadTrackView,
-    DeleteOneTrackView,
     AddTrackToPlaylist,
 )
-
+from .views import DeleteOneTrackView, ListTracksView, UploadTrackView
 
 urlpatterns = [
     path("upload/", UploadTrackView.as_view(), name="upload-track"),
