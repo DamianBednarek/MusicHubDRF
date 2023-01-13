@@ -1,7 +1,7 @@
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import no_body, swagger_auto_schema
 from rest_framework import generics, status
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,7 +10,7 @@ from MusicHub.main.swagger_parameters import TOKEN_PARAMETER, basic_response
 from MusicHub.main.utils import LargeResultsSetPagination
 from MusicHub.tracks import custom_track_schema
 from MusicHub.tracks.models import Track
-from MusicHub.tracks.serializers import CreateTrackSerializer, ListTrackSerializer
+from MusicHub.tracks.serializers import CreateTrackSerializer, ListTrackSerializer, AddTrackToPlaylistSerializer
 
 
 @method_decorator(
@@ -81,6 +81,29 @@ class DeleteOneTrackView(generics.DestroyAPIView):
         instance = self.get_object()
         instance.delete()
         return Response(
-            {"detail": "Track deleted Successfull!"},
+            {"detail": "Track deleted Successful!"},
             status=status.HTTP_204_NO_CONTENT,
         )
+
+
+@method_decorator(
+    name="patch",
+    decorator=swagger_auto_schema(
+        manual_parameters=[custom_track_schema.TOKEN_PARAMETER],
+    ),
+)
+class AddTrackToPlaylist(UpdateAPIView):
+    """View for adding user track to his playlist"""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = AddTrackToPlaylistSerializer
+    http_method_names = ["patch"]
+
+    def get_queryset(self):
+        """Ensures that user can only add tracks that belong to him"""
+        return Track.objects.filter(created_by=self.request.user)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["user"] = self.request.user
+        return context

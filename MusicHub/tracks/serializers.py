@@ -1,11 +1,16 @@
-from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from ..main.constants import FORMATED_DATE
-from ..main.utils import format_sec_to_mins
+from MusicHub.tracks.validators import is_user_owner_of_obj
+from .constants import FORMATED_DATE
 from .models import Track
 from .track_service import get_track_length
+from .track_service import (
+    validate_track,
+    remove_from_liked_when_set_to_private,
+)
 from .validators import validate_track
+from ..main.constants import FORMATED_DATE
+from ..main.utils import format_sec_to_mins
 
 
 class CreateTrackSerializer(ModelSerializer):
@@ -33,10 +38,6 @@ class CreateTrackSerializer(ModelSerializer):
 
 
 class ListTrackSerializer(ModelSerializer):
-    playlist = serializers.PrimaryKeyRelatedField(
-        many=False, read_only="True", default=None
-    )
-
     class Meta:
         model = Track
         fields = [
@@ -55,5 +56,23 @@ class ListTrackSerializer(ModelSerializer):
             "track_length": format_sec_to_mins(instance.track_length),
             "created_at": instance.created_at.strftime(FORMATED_DATE),
             "is_public": instance.is_public,
-            "playlist": instance.playlist,
+            "playlist": instance.playlist_id,
         }
+
+
+class AddTrackToPlaylistSerializer(ModelSerializer):
+    class Meta:
+        model = Track
+        fields = ["playlist"]
+
+    def validate_playlist(self, value):
+        is_user_owner_of_obj(self.context.get("user"), value)
+        return value
+
+    def update(self, instance, validated_data):
+        validated_data["is_public"] = validated_data["playlist"].is_public
+        remove_from_liked_when_set_to_private(instance, validated_data)
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        return {"message": f"track added successfuly to playlist: {instance.playlist}"}

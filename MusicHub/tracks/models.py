@@ -6,6 +6,7 @@ from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 
 from ..config.settings import Common
+from MusicHub.main.managers import AggregationManager
 
 
 def get_upload_path(instance, filename):
@@ -51,6 +52,9 @@ class Track(models.Model):
         null=True,
         blank=True,
     )
+    likes = models.ManyToManyField(Common.AUTH_USER_MODEL, related_name="track_likes")
+
+    objects = AggregationManager()
 
     def __str__(self):
         return self.filename
