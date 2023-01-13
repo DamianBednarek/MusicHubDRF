@@ -1,14 +1,11 @@
+import os
 from uuid import uuid4
 
-
 from django.contrib.auth import get_user_model
-
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 
-from ..main.utils import get_upload_path, get_sentinal_user
 from ..config.settings import Common
-
 
 
 def get_upload_path(instance, filename):
@@ -24,9 +21,7 @@ def get_sentinal_user():
     return deleted_user[0]  # id is on index 0 by default
 
 
-
 class Track(models.Model):
-
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
 
     filename = models.CharField(

@@ -1,13 +1,9 @@
+import os
 import random
 import string
-import os
-from typing import List
 from uuid import uuid4
 
-from authemail.models import PasswordResetCode, SignupCode
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
-from django.utils import timezone
 from rest_framework.pagination import PageNumberPagination
 
 
