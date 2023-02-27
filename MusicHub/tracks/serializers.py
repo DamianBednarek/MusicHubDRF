@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
 from MusicHub.tracks.validators import is_user_owner_of_obj
-from .constants import FORMATED_DATE
 from .models import Track
 from .track_service import get_track_length
 from .track_service import (
@@ -9,7 +8,7 @@ from .track_service import (
     remove_from_liked_when_set_to_private,
 )
 from .validators import validate_track
-from ..main.constants import FORMATED_DATE
+from ..main.constants import FORMATTED_DATE
 from ..main.utils import format_sec_to_mins
 
 
@@ -54,7 +53,7 @@ class ListTrackSerializer(ModelSerializer):
             "id": instance.id,
             "filename": instance.filename,
             "track_length": format_sec_to_mins(instance.track_length),
-            "created_at": instance.created_at.strftime(FORMATED_DATE),
+            "created_at": instance.created_at.strftime(FORMATTED_DATE),
             "is_public": instance.is_public,
             "playlist": instance.playlist_id,
         }

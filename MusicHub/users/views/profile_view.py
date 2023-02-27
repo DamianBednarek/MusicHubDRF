@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 
 from MusicHub.main import swagger_parameters
 from MusicHub.main.swagger_parameters import TOKEN_PARAMETER
-from MusicHub.users.models import User
 from MusicHub.users.serializers import (
     AddChangePictureSerializer,
     ChangePasswordSerializer,
@@ -27,6 +26,9 @@ from MusicHub.users.serializers import (
     ),
 )
 class ProfileView(RetrieveUpdateAPIView):
+    """
+     Get or update profile information
+    """
     serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = None

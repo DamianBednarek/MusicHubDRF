@@ -14,8 +14,6 @@ from social_core.exceptions import AuthForbidden
 from social_django.utils import psa
 
 from MusicHub.main import swagger_parameters
-
-from ...main.exception_handler import CustomUserException
 from .. import custom_user_schema
 from ..models import User
 from ..serializers import (
@@ -31,6 +29,7 @@ from ..user_service import (
     delete_used_token,
     reset_password_email,
 )
+from ...main.exception_handler import CustomUserException
 
 
 @method_decorator(
@@ -70,7 +69,6 @@ class SignUpVerifyView(SignupVerify):
         ),
     )
     def get(self, request, format=None):
-
         code = request.query_params.get("code")
         verification_code = check_code_for_verification(code, SignupCode)
         verification_code.user.is_verified = True
@@ -80,7 +78,6 @@ class SignUpVerifyView(SignupVerify):
 
 
 class SignInView(GenericAPIView):
-
     serializer_class = SigninSerializer
 
     @swagger_auto_schema(
@@ -116,7 +113,7 @@ class SignInView(GenericAPIView):
         return Response(content, status)
 
 
-class SignOutView(APIView):
+class SignOutView(APIView):  # TODO
     permission_classes = (permissions.IsAuthenticated,)
 
     @swagger_auto_schema(
@@ -129,13 +126,13 @@ class SignOutView(APIView):
         tokens = SigninToken.objects.filter(user=request.user)
         for token in tokens:
             token.delete()
-        content = {"Success": ("User signed out.")}
+        content = {"Success": "User signed out."}
         status = 200
 
         return Response(content, status=status)
 
 
-class RecoverPassword(GenericAPIView, UpdateModelMixin):
+class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO
     """
     View to handle sending email with reset password link and
     changing password to a new one
@@ -162,7 +159,7 @@ class RecoverPassword(GenericAPIView, UpdateModelMixin):
     @swagger_auto_schema(
         responses=swagger_parameters.basic_response(
             200,
-            {"message": "Reset link was sucessfully send to given address email"},
+            {"message": "Reset link was successfully send to given address email"},
             400,
         )
     )
@@ -178,7 +175,7 @@ class RecoverPassword(GenericAPIView, UpdateModelMixin):
         except User.DoesNotExist:
             raise CustomUserException("Account with given email does not exists")
         return Response(
-            status=200, data="Reset link was sucessfully send to given address email"
+            status=200, data="Reset link was successfully send to given address email"
         )
 
     @delete_used_token
@@ -204,7 +201,7 @@ class RecoverPassword(GenericAPIView, UpdateModelMixin):
 @psa()
 def social_sign_google(request, backend):
     """View to exchange google API token for application authorization token
-    If no user is associated with google token data, user will be created
+    If no user is associated with Google token data, user will be created
     otherwise, user will be logged in
     """
     serializer = SocialAuthSerializer(data=request.data)

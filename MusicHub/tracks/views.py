@@ -7,6 +7,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from MusicHub.main.swagger_parameters import TOKEN_PARAMETER
 from MusicHub.main.swagger_parameters import basic_response
 from MusicHub.main.utils import LargeResultsSetPagination
 from MusicHub.tracks import custom_track_schema
@@ -15,7 +16,6 @@ from MusicHub.tracks.serializers import (
     AddTrackToPlaylistSerializer,
 )
 from MusicHub.tracks.serializers import CreateTrackSerializer, ListTrackSerializer
-from .custom_track_schema import TOKEN_PARAMETER
 
 
 @method_decorator(
@@ -86,7 +86,7 @@ class DeleteOneTrackView(generics.DestroyAPIView):
         instance = self.get_object()
         instance.delete()
         return Response(
-            {"detail": "Track deleted Successfull!"},
+            {"detail": "Track deleted successfully!"},
             status=status.HTTP_204_NO_CONTENT,
         )
 
@@ -94,7 +94,7 @@ class DeleteOneTrackView(generics.DestroyAPIView):
 @method_decorator(
     name="patch",
     decorator=swagger_auto_schema(
-        manual_parameters=[custom_track_schema.TOKEN_PARAMETER],
+        manual_parameters=[TOKEN_PARAMETER],
     ),
 )
 class AddTrackToPlaylist(UpdateAPIView):

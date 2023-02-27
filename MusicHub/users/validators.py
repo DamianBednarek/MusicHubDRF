@@ -26,6 +26,9 @@ def validate_old_password(data, user):
 
 
 def validate_picture(picture):
+    """
+    Validate picture max size
+    """
     if picture:
         validate_files(picture, MAX_PICTURE_SIZE_IN_MB)
     else:

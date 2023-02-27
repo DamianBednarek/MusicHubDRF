@@ -5,8 +5,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 
-from ..config.settings import Common
 from MusicHub.main.managers import AggregationManager
+from ..config.settings import Common
 
 
 def get_upload_path(instance, filename):

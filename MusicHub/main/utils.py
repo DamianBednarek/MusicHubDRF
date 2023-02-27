@@ -7,12 +7,12 @@ from django.contrib.auth import get_user_model
 from rest_framework.pagination import PageNumberPagination
 
 
-def trim_spaces_from_data(data: str) -> str:
+def strip_dict(data: dict[str, str]) -> dict[str, str]:
     """
     trim all whitespace characters from given string
     """
     for key, value in data.items():
-        data[key] = " ".join(value.split())
+        data[key] = value.strip()
     return data
 
 

@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from ..main.utils import get_random_string, trim_spaces_from_data
 from .models import User
 from .validators import (
     validate_old_password,
     validate_passwords_match,
     validate_picture,
 )
+from ..main.utils import get_random_string, strip_dict
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -25,8 +25,6 @@ class SignupSerializer(serializers.ModelSerializer):
             "last_name",
         ]
         extra_kwargs = {
-            "password": {"write_only": True},
-            "confirm_password": {"write_only": True},
             "id": {"read_only": True},
         }
 
@@ -44,7 +42,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("confirm_password")
-        return User.objects.create_user(**trim_spaces_from_data(validated_data))
+        return User.objects.create_user(**strip_dict(validated_data))
 
 
 class SigninSerializer(serializers.Serializer):
@@ -75,7 +73,6 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(ResetPasswordSerializer):
-
     old_password = serializers.CharField(
         max_length=100,
     )

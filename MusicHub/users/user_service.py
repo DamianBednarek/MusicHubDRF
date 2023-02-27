@@ -9,7 +9,7 @@ from ..main.exception_handler import CustomUserException
 
 
 def verification_email(user, request):
-    """Sent a verification email with link to the signed up user
+    """Sent a verification email with link to the signed-up user
 
     Args:
         user (User): Created user
@@ -53,7 +53,7 @@ def has_token_expired(token):
     Returns:
         Boolean: True if token is expired, False otherwise
     """
-    time = token.created_at + timezone.timedelta(days=1)
+    time = token.created_at + timezone.timedelta(hours=24)
     if time < timezone.now():
         return True
     return False
@@ -64,13 +64,13 @@ def check_code_for_verification(code, objectModel):
     Checks if verification code is valid ( not expired and not used)
     """
     try:
-        verifiation_code = objectModel.objects.get(code=code)
+        verification_code = objectModel.objects.get(code=code)
     except objectModel.DoesNotExist:
         raise CustomUserException("Verification code is not a valid code")
-    if has_token_expired(verifiation_code):
+    if has_token_expired(verification_code):
         raise CustomUserException("Token has expired.")
 
-    return verifiation_code
+    return verification_code
 
 
 def create_or_return_user(backend, response, *args, **kwargs):
