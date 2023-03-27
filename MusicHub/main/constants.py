@@ -1,5 +1,3 @@
-from enum import Enum
-
 FORMATTED_DATE = "%d:%M:%Y"
 MAX_FILE_SIZE_IN_MB = 30 * 1024 * 1024
 MAX_PICTURE_SIZE_IN_MB = 3 * 1024 * 1024

@@ -1,9 +1,39 @@
 version: '3'
 services:
+  api:
+    build: .
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    command:
+      - /bin/bash
+      - -c
+      - |
+        poetry run python manage.py migrate
+        poetry run python manage.py runserver 0.0.0.0:8000
+    networks:
+      - custom_network
+    ports:
+      - "8000:8000"
+    restart: always
+
   postgres:
-    image: postgres:latest
+    image: postgres:15
+    networks:
+      - custom_network
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - "music-hub-db:/var/lib/postgresql/data"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5432:5432"
+
+networks:
+  custom_network:
+    name: custom_network
+
+volumes:
+  music-hub-db:
