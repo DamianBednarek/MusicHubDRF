@@ -12,7 +12,7 @@ class UserAdmin(UserAdmin):
             "Permissions",
             {"fields": ("is_active", "is_staff", "is_admin", "is_verified")},
         ),
-        ("Important dates", {"fields": ("last_login", "date_joined")}),
+        # ("Important dates", {"fields": ("last_login", "date_joined")}),
         ("Custom Info", {"fields": ("profile_avatar", "followers")}),
     )
     filter_horizontal = ()
