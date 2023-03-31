@@ -6,6 +6,8 @@ services:
       - postgres
     env_file:
       - .env
+    environment:
+      - POSTGRES_HOST=postgres
     command:
       - /bin/bash
       - -c
@@ -32,9 +34,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+
 networks:
   custom_network:
-    name: custom_network
+
 
 volumes:
   music-hub-db:

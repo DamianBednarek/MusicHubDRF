@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Common(Configuration):
     DEBUG = False
-    SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+    SECRET_KEY = os.getenv("SECRET_KEY")
     ALLOWED_HOSTS = ["*"]
 
     # Application definition
@@ -100,14 +100,14 @@ class Common(Configuration):
 
     # Database
     # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+    POSTGRES_HOST = os.getenv("POSTGRES_HOST") or "localhost"
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
             "NAME": "postgres",
             "USER": "postgres",
             "PASSWORD": "postgres",
-            "HOST": "postgres",
+            "HOST": POSTGRES_HOST,
             "PORT": "5432",
         }
     }
@@ -237,24 +237,19 @@ class Common(Configuration):
     # https://docs.djangoproject.com/en/3.1/topics/email/
     # https://docs.djangoproject.com/en/3.1/ref/settings/#email-host
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_FROM = (
-            os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM") or "musichub.itechart@gmail.com"
-    )
+    EMAIL_FROM = "hansikurshh@gmail.com"
+
     EMAIL_HOST = "smtp.sendgrid.net"
     EMAIL_PORT = "587"
     EMAIL_HOST_USER = "apikey"
-    EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY") or os.getenv(
-        "AUTHEMAIL_EMAIL_HOST_PASSWORD"
-    )
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PROVIDER_KEY")
 
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
     EMAIL_LINK_PATH = ""
 
     # Antivirus provider
-    ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY") or os.environ.get(
-        "ANTIVIRUS_API_KEY"
-    )
+    ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY")
     # Swagger Documentation
     SWAGGER_SETTINGS = {
         "DEFAULT_MODEL_RENDERING": "example",

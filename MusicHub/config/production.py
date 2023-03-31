@@ -5,7 +5,7 @@ from .settings import Common
 
 class Production(Common):
     INSTALLED_APPS = Common.INSTALLED_APPS
-    SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+    SECRET_KEY = os.getenv("SECRET_KEY")
     INSTALLED_APPS += ("storages",)
     # Site
     # https://docs.djangoproject.com/en/2.0/ref/settings/#allowed-hosts

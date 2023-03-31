@@ -26,7 +26,8 @@ def verification_email(user, request):
         to_email=[user.email],
     )
     if error:
-        raise CustomUserException(error)
+        raise CustomUserException(f"Email Server error: {error}\n"
+                                  f"{settings.EMAIL_HOST_PASSWORD}")
 
 
 def reset_password_email(user):
