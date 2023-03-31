@@ -198,36 +198,36 @@ class Common(Configuration):
                 "class": "logging.StreamHandler",
                 "formatter": "django.server",
             },
-            "file": {
-                "level": "INFO",
-                "class": "logging.FileHandler",
-                "filename": "general.log",
-                "formatter": "simple",
-            },
-            "file_error": {
-                "level": "ERROR",
-                "class": "logging.FileHandler",
-                "filename": "error.log",
-                "formatter": "verbose",
-            },
+            # "file": {
+            #     "level": "INFO",
+            #     "class": "logging.FileHandler",
+            #     "filename": "general.log",
+            #     "formatter": "simple",
+            # },
+            # "file_error": {
+            #     "level": "ERROR",
+            #     "class": "logging.FileHandler",
+            #     "filename": "error.log",
+            #     "formatter": "verbose",
+            # },
         },
         "loggers": {
             "django": {
-                "handlers": ["django.server", "file", "file_error"],
+                "handlers": ["django.server"],
                 "propagate": True,
             },
             "django.server": {
-                "handlers": ["django.server", "file", "file_error"],
+                "handlers": ["django.server"],
                 "level": "INFO",
                 "propagate": False,
             },
             "django.request": {
-                "handlers": ["django.server", "file", "file_error"],
+                "handlers": ["django.server"],
                 "level": "INFO",
                 "propagate": False,
             },
             "django.db.backends": {
-                "handlers": ["django.server", "file", "file_error"],
+                "handlers": ["django.server"],
                 "level": "INFO",
             },
         },
@@ -238,7 +238,7 @@ class Common(Configuration):
     # https://docs.djangoproject.com/en/3.1/ref/settings/#email-host
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_FROM = (
-        os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM") or "musichub.itechart@gmail.com"
+            os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM") or "musichub.itechart@gmail.com"
     )
     EMAIL_HOST = "smtp.sendgrid.net"
     EMAIL_PORT = "587"
