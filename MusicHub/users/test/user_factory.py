@@ -20,3 +20,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         obj.set_password(kwargs["password"])
         obj.save()
         return obj
+
+
+class UserNotVerified(UserFactory):
+    is_active = False

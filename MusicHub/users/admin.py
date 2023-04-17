@@ -11,14 +11,14 @@ class UserAdmin(UserAdmin):
             "Permissions",
             {"fields": ("is_active", "is_staff", "is_admin", "is_verified")},
         ),
-        # ("Important dates", {"fields": ("last_login", "date_joined")}),
+        ("Important dates", {"fields": ("last_modified", "created_at")}),
         ("Custom Info", {"fields": ("profile_avatar", "followers")}),
     )
     filter_horizontal = ()
     ordering = (
         "created_at",
     )
-    list_display = ("email", "first_name", "last_name", "is_staff")
+    list_display = ("email", "first_name", "last_name", "is_verified", "is_staff")
     list_filter = ("email", "is_active", "is_staff")
 
 

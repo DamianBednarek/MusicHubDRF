@@ -1,11 +1,7 @@
-from django.utils.decorators import method_decorator
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 
-from MusicHub.main import swagger_parameters
-from MusicHub.main.swagger_parameters import TOKEN_PARAMETER
 from MusicHub.users.serializers import (
     AddChangePictureSerializer,
     ChangePasswordSerializer,
@@ -13,18 +9,6 @@ from MusicHub.users.serializers import (
 )
 
 
-@method_decorator(
-    name="get",
-    decorator=swagger_auto_schema(
-        manual_parameters=[TOKEN_PARAMETER],
-    ),
-)
-@method_decorator(
-    name="patch",
-    decorator=swagger_auto_schema(
-        manual_parameters=[TOKEN_PARAMETER],
-    ),
-)
 class ProfileView(RetrieveUpdateAPIView):
     """
      Get or update profile information
@@ -41,15 +25,6 @@ class ProfileView(RetrieveUpdateAPIView):
         return self.get_queryset()
 
 
-@method_decorator(
-    name="patch",
-    decorator=swagger_auto_schema(
-        manual_parameters=[TOKEN_PARAMETER],
-        responses=swagger_parameters.success_only_response(
-            200, {"message": "password changed successfully"}
-        ),
-    ),
-)
 class ChangePassword(UpdateAPIView):
     """
     View allowing authorized user to change their password
@@ -71,10 +46,6 @@ class ChangePassword(UpdateAPIView):
         return context
 
 
-@method_decorator(
-    name="patch",
-    decorator=swagger_auto_schema(manual_parameters=[TOKEN_PARAMETER]),
-)
 class AddUpdateProfilePicture(UpdateAPIView):
     """
     View responsible for adding or updating existing user profile picture.

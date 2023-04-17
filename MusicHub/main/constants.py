@@ -9,4 +9,4 @@ PASSWORD_REGEX = "^.{8,64}$"
 class ValidationMessage:
     NAME = "Name not valid: name must start and ends with letter and can contain only ' ' or '-' special characters "
     EMAIL = "Please provide valid email address"
-    PASSWORD = "Password must be between 8-64 characters, can include upper/lower cases, digits and special characters"
+    PASSWORD = "Password not valid - must be between 8-64 characters, can include upper/lower cases, digits and special characters"

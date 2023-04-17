@@ -1,6 +1,4 @@
-from uuid import uuid4
-
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.core.validators import (
     EmailValidator,
     FileExtensionValidator,
@@ -42,8 +40,7 @@ class CustomManager(BaseUserManager):
         return super(CustomManager, self).get_queryset().filter(is_verified=True)
 
 
-class User(AbstractBaseUser, PermissionsMixin, Meta):
-
+class User(AbstractBaseUser, Meta):
     first_name = models.CharField(max_length=30, blank=False, null=False,
                                   validators=[RegexValidator(regex=NAME_REGEX, message=ValidationMessage.NAME)]
                                   )

@@ -41,7 +41,7 @@ class SignUpVerifyView(APIView):
         return Response(data="Registration complete", status=200)
 
 
-class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO
+class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO refactor in the future
     """
     View to handle sending email with reset password link and
     changing password to a new one
@@ -86,7 +86,7 @@ class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO
 
 @api_view(["POST"])
 @psa()
-def social_sign_google(request, backend):
+def social_sign_google(request, backend):  # TODO Move this view to auth package
     """View to exchange google API token for application authorization token
     If no user is associated with Google token data, user will be created
     otherwise, user will be logged in
@@ -94,7 +94,7 @@ def social_sign_google(request, backend):
     serializer = SocialAuthSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         try:
-            user = request.backend.do_auth(request.data["access_token"])
+            user = request.backend.do_auth(request.data.get("access_token"))
         except AuthForbidden as e:
             raise CustomUserException(str(e))
         token, created = SigninToken.objects.get_or_create(user=user)

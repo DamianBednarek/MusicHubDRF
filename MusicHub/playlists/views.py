@@ -1,15 +1,11 @@
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from django.utils.decorators import method_decorator
-from drf_yasg.utils import swagger_auto_schema
 
 from MusicHub.main.exception_handler import CustomException
-
 from .models import Playlist
 from .serializers import PlaylistSerializer, ListPlaylistSerializer
 from ..main.utils import LargeResultsSetPagination
-from .custom_playlist_schema import TOKEN_PARAMETER, optional_track_id
 
 
 class CreatePlaylistView(CreateAPIView):
@@ -39,12 +35,6 @@ class UpdatePlaylistView(UpdateAPIView):
     http_method_names = ["patch"]
 
 
-@method_decorator(
-    name="get",
-    decorator=swagger_auto_schema(
-        manual_parameters=[TOKEN_PARAMETER, optional_track_id]
-    ),
-)
 class ListOwnPlaylistView(ListAPIView):
     """
     View to see list of playlists created by authorized user
