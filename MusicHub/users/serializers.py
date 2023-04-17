@@ -1,11 +1,13 @@
 from rest_framework import serializers
 
 from .models import User
+from .user_service import send_verification_email
 from .validators import (
     validate_old_password,
     validate_passwords_match,
     validate_picture,
 )
+from ..codes.models import SignUpCode
 from ..main.utils import get_random_string, strip_dict
 
 
@@ -25,7 +27,7 @@ class SignupSerializer(serializers.ModelSerializer):
             "last_name",
         ]
         extra_kwargs = {
-            "id": {"read_only": True},
+            "id": {"read_only": True}
         }
 
     def validate(self, attrs):
@@ -42,12 +44,10 @@ class SignupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("confirm_password")
-        return User.objects.create_user(**strip_dict(validated_data))
-
-
-class SigninSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=256, allow_blank=False)
-    password = serializers.CharField(min_length=8, max_length=64, allow_blank=False)
+        user = User.objects.create_user(**strip_dict(validated_data))
+        signup_code = SignUpCode.objects.create(user)
+        send_verification_email(user, signup_code)
+        return user
 
 
 class ResetPasswordSerializer(serializers.ModelSerializer):

@@ -18,6 +18,7 @@ from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -32,12 +33,13 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
-
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/user/", include("MusicHub.users.urls")),
-    path("api/track/", include("MusicHub.tracks.urls")),
-    path("api/playlist/", include("MusicHub.playlists.urls")),
+    path("api/users/", include("MusicHub.users.urls")),
+    path("api/tracks/", include("MusicHub.tracks.urls")),
+    path("api/playlists/", include("MusicHub.playlists.urls")),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # swagger api doc paths
     path(
         "doc/swagger",

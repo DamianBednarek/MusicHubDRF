@@ -1,9 +1,3 @@
-from authemail.models import PasswordResetCode, SignupCode
-from authemail.views import SignupVerify
-from django.contrib.auth import authenticate
-from django.utils.decorators import method_decorator
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import permissions
 from rest_framework.authtoken.models import Token as SigninToken
 from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView, GenericAPIView
@@ -13,123 +7,38 @@ from rest_framework.views import APIView
 from social_core.exceptions import AuthForbidden
 from social_django.utils import psa
 
-from MusicHub.main import swagger_parameters
-from .. import custom_user_schema
+from MusicHub.codes.models import ResetPasswordCode, SignUpCode
 from ..models import User
 from ..serializers import (
     ResetPasswordEmailSerializer,
     ResetPasswordSerializer,
-    SigninSerializer,
     SignupSerializer,
     SocialAuthSerializer,
 )
 from ..user_service import (
     check_code_for_verification,
-    check_user_sign_up,
-    delete_used_token,
     reset_password_email,
 )
+from ...codes.helpers import get_or_400
 from ...main.exception_handler import CustomUserException
 
 
-@method_decorator(
-    name="post",
-    decorator=[
-        check_user_sign_up,
-        swagger_auto_schema(
-            responses=swagger_parameters.basic_response(
-                201,
-                {
-                    "id": "string",
-                    "email": "string",
-                    "first_name": "string",
-                    "last_name": "string",
-                },
-                400,
-            ),
-        ),
-    ],
-)
 class SignUpView(CreateAPIView):
     """
-    View for signing up user
+    View Responsible for creating a new user.
     """
-
     serializer_class = SignupSerializer
 
-    def get_queryset(self):
-        return User.objects.filter(email=self.request.data.get("email"))
 
+class SignUpVerifyView(APIView):
+    """View responsible for confirming new user."""
 
-class SignUpVerifyView(SignupVerify):
-    @swagger_auto_schema(
-        manual_parameters=custom_user_schema.signup_verify_parameters,
-        responses=swagger_parameters.basic_response(
-            200, {"message": "Email address verified"}, 400
-        ),
-    )
-    def get(self, request, format=None):
-        code = request.query_params.get("code")
-        verification_code = check_code_for_verification(code, SignupCode)
-        verification_code.user.is_verified = True
-        verification_code.user.save()
-        verification_code.delete()
-        return Response(data="Email address verified.", status=200)
-
-
-class SignInView(GenericAPIView):
-    serializer_class = SigninSerializer
-
-    @swagger_auto_schema(
-        responses=swagger_parameters.basic_response(200, {"token": "token"}, 401),
-    )
-    def post(self, request, *args, **kwargs):
-        serializer = SigninSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = authenticate(
-                email=serializer.data["email"], password=serializer.data["password"]
-            )
-
-            if user:
-                if user.is_verified:
-                    if user.is_active:
-                        token, created = SigninToken.objects.get_or_create(user=user)
-                        content = {"token": token.key}
-                        status = 200
-                    else:
-                        content = {"detail": ("Inactive user account.")}
-                        status = 401
-                else:
-                    content = {"detail": ("Unverified user account.")}
-                    status = 401
-            else:
-                content = {"detail": ("Invalid credentials, unable to signin.")}
-                status = 401
-
-        else:
-            content = serializer.errors
-            status = 400
-        return Response(content, status)
-
-
-class SignOutView(APIView):  # TODO
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @swagger_auto_schema(
-        manual_parameters=[custom_user_schema.TOKEN_PARAMETER],
-        responses=swagger_parameters.basic_response(
-            200, {"Success": "User signed out"}, 400
-        ),
-    )
-    def get(self, request, *args, **kwargs):
-        tokens = SigninToken.objects.filter(user=request.user)
-        for token in tokens:
-            token.delete()
-        content = {"Success": "User signed out."}
-        status = 200
-
-        return Response(content, status=status)
+    def get(self, request):
+        code = get_or_400(SignUpCode, code=request.query_params.get("code"))
+        code.user.is_verified = True
+        code.user.save()
+        code.delete()
+        return Response(data="Registration complete", status=200)
 
 
 class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO
@@ -145,7 +54,7 @@ class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO
             return User.objects.get_queryset_verified()
         elif self.request.method == "PATCH":
             code = self.request.query_params.get("code")
-            return check_code_for_verification(code, PasswordResetCode).user
+            return check_code_for_verification(code, ResetPasswordCode).user
 
     def get_serializer(self, *args, **kwargs):
         if self.request.method == "POST":
@@ -156,13 +65,6 @@ class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO
     def get_object(self):
         return self.get_queryset()
 
-    @swagger_auto_schema(
-        responses=swagger_parameters.basic_response(
-            200,
-            {"message": "Reset link was successfully send to given address email"},
-            400,
-        )
-    )
     def post(self, request, *args, **kwargs):
         """
         Sends email with link to reset password for given email address
@@ -178,25 +80,10 @@ class RecoverPassword(GenericAPIView, UpdateModelMixin):  # TODO
             status=200, data="Reset link was successfully send to given address email"
         )
 
-    @delete_used_token
-    @swagger_auto_schema(
-        manual_parameters=[custom_user_schema.signup_verify_parameters],
-        responses=swagger_parameters.basic_response(
-            200,
-            {"message": "password changed successfully"},
-            400,
-        ),
-    )
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
 
-@swagger_auto_schema(
-    method="post",
-    manual_parameters=[custom_user_schema.google_oauth_backend],
-    request_body=SocialAuthSerializer,
-    responses=swagger_parameters.basic_response(200, {"token": "token"}, 401),
-)
 @api_view(["POST"])
 @psa()
 def social_sign_google(request, backend):

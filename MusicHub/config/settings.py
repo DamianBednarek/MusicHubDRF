@@ -34,8 +34,6 @@ class Common(Configuration):
         "django.contrib.staticfiles",
         # Third party apps
         "rest_framework",
-        "rest_framework.authtoken",
-        "authemail",
         "django_filters",
         "drf_yasg",
         "social_django",
@@ -44,10 +42,12 @@ class Common(Configuration):
         "MusicHub.users",
         "MusicHub.tracks",
         "MusicHub.playlists",
+        "MusicHub.codes",
         # utility apps
         "MusicHub.main",
         "MusicHub.antivirusProvider",
         "MusicHub.emailProvider",
+
     ]
 
     ROOT_URLCONF = "MusicHub.urls"
@@ -159,7 +159,7 @@ class Common(Configuration):
             "rest_framework.permissions.AllowAny",
         ],
         "DEFAULT_AUTHENTICATION_CLASSES": (
-            "rest_framework.authentication.TokenAuthentication",
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
         ),
         "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler",
     }

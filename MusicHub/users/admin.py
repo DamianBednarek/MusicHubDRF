@@ -1,4 +1,3 @@
-from authemail.admin import EmailUserAdmin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
@@ -23,5 +22,4 @@ class UserAdmin(UserAdmin):
     list_filter = ("email", "is_active", "is_staff")
 
 
-admin.site.unregister(get_user_model())
 admin.site.register(get_user_model(), UserAdmin)
