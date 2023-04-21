@@ -6,3 +6,4 @@ class Development(Common):
     INSTALLED_APPS = Common.INSTALLED_APPS
     SECRET_KEY = "django-insecure-o%=+4+n$6ip&msx6h+y@kuv295j#clj*-q!@^!x%eamf%d^8b^"
     EMAIL_LINK_PATH = "http://localhost:8000"
+    CORS_ALLOW_ALL_ORIGINS = True
